@@ -64,6 +64,8 @@ You'll need this to log in to LuCl
 ```bash
 passwd root
 ```
+### Do not run Step 5. It will break LuCI and cause errors.⚠️
+I’ll fix it soon, so just skip it and continue with the next steps.
 
 ### Step 5: Fix UI OpenWrt Language and Style Error
 ```bash
