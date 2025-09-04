@@ -64,17 +64,77 @@ You'll need this to log in to LuCl
 ```bash
 passwd root
 ```
-### Do not run Step 5. It will break LuCI and cause errors.⚠️
-I’ll fix it soon, so just skip it and continue with the next steps.
 
 ### Step 5: Fix UI OpenWrt Language and Style Error
+Open the config file: 
+`vi /etc/config/luci`
 ```bash
-echo "config internal themes" >> /etc/config/luci
-echo "    option Bootstrap '/luci-static/bootstrap'" >> /etc/config/luci
+config core 'main'
+        option lang 'auto'
+        option mediaurlbase '/luci-static/bootstrap'
+        option resourcebase '/luci-static/resources'
+        option ubuspath '/ubus/'
+
+config extern 'flash_keep'
+        option uci '/etc/config/'
+        option dropbear '/etc/dropbear/'
+        option openvpn '/etc/openvpn/'
+        option passwd '/etc/passwd'
+        option opkg '/etc/opkg.conf'
+        option firewall '/etc/firewall.user'
+        option uploads '/lib/uci/upload/'
+
+config internal 'languages'
+
+config internal 'sauth'
+        option sessionpath '/tmp/luci-sessions'
+        option sessiontime '3600'
+
+config internal 'ccache'
+        option enable '1'
+
+config internal 'themes'
+        option Bootstrap '/luci-static/bootstrap'
+
+config internal 'apply'
+        option rollback '90'
+        option holdoff '4'
+        option timeout '5'
+        option display '1.5'
+
+config internal 'diag'
+        option dns 'openwrt.org'
+        option ping 'openwrt.org'
+        option route 'openwrt.org'
+```
+
+Save it and you’re done. That should fix the UI issues.
+
+### Step 6 (Optional): Restore Default LuCI
+If things are totally messed up or you get errors, you can remove the old LuCI and reinstall the stock one:
+```bash
+rm -rf /usr/lib/lua/luci
+rm -rf /www/luci-static
+rm -rf /usr/share/luci
+rm -f /etc/config/luci
+rm -f /www/cgi-bin/luci 
+```
+Then download and extract fresh Luci :
+
+```bash
+cd /tmp
+wget https://raw.githubusercontent.com/EngineerMazid/ZLT-X28/main/zltx28_luci_stock_full.tgz -O /tmp/zltx28_luci_stock_full.tgz
+cd /
+tar xzf /tmp/zltx28_luci_stock_full.tgz
+```
+That’ll restore everything to default without errors.
+
+```
 uci commit luci
 killall uhttpd
 uhttpd -p 0.0.0.0:4153 -h /www &
 ```
+
 
 ## Persistence Across Reboots
 Add these lines to your startup script:
